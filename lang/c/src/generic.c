@@ -2653,6 +2653,9 @@ avro_generic_map_get_by_name(const avro_value_iface_t *viface,
 	const avro_generic_map_t  *self = (const avro_generic_map_t *) vself;
 	child->iface = &iface->child_giface->parent;
 	child->self = avro_raw_map_get(&self->map, name, index);
+	if (child->self == NULL) {
+		return EINVAL;
+	}
 	return 0;
 }
 

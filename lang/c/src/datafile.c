@@ -276,9 +276,8 @@ static int file_read_header(avro_reader_t reader,
 
 	rval = avro_value_get_by_name(&meta, "avro.codec", &codec_val, NULL);
 	if (rval) {
-		avro_set_error("File header doesn't contain a codec");
-		avro_value_decref(&meta);
-		return rval;
+		/* use codec null */
+		avro_codec(codec, NULL);
 	} else {
 		const void *buf;
 		size_t size;
