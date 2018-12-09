@@ -116,7 +116,7 @@ write_read_check(avro_schema_t writers_schema, avro_datum_t datum,
 		if (size != avro_writer_tell(writer)) {
 			fprintf(stderr,
 				"Unable to calculate size %s validate=%d "
-				"(%"PRId64" != %"PRId64")\n  %s\n",
+				"(%" PRId64 " != %" PRId64 ")\n  %s\n",
 				type, validate, size, avro_writer_tell(writer),
 				avro_strerror());
 			exit(EXIT_FAILURE);
