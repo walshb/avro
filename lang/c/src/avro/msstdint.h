@@ -100,6 +100,7 @@ typedef uint16_t  uint_least16_t;
 typedef uint32_t  uint_least32_t;
 typedef uint64_t  uint_least64_t;
 
+#if _MSC_VER < 1900
 // 7.18.1.3 Fastest minimum-width integer types
 typedef int8_t    int_fast8_t;
 typedef int16_t   int_fast16_t;
@@ -109,6 +110,7 @@ typedef uint8_t   uint_fast8_t;
 typedef uint16_t  uint_fast16_t;
 typedef uint32_t  uint_fast32_t;
 typedef uint64_t  uint_fast64_t;
+#endif
 
 // 7.18.1.4 Integer types capable of holding object pointers
 #ifdef _WIN64 // [
@@ -156,6 +158,7 @@ typedef uint64_t  uintmax_t;
 #define UINT_LEAST32_MAX  UINT32_MAX
 #define UINT_LEAST64_MAX  UINT64_MAX
 
+#if _MSC_VER < 1900
 // 7.18.2.3 Limits of fastest minimum-width integer types
 #define INT_FAST8_MIN    INT8_MIN
 #define INT_FAST8_MAX    INT8_MAX
@@ -169,6 +172,7 @@ typedef uint64_t  uintmax_t;
 #define UINT_FAST16_MAX  UINT16_MAX
 #define UINT_FAST32_MAX  UINT32_MAX
 #define UINT_FAST64_MAX  UINT64_MAX
+#endif
 
 // 7.18.2.4 Limits of integer types capable of holding object pointers
 #ifdef _WIN64 // [
