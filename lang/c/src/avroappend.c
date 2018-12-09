@@ -19,9 +19,6 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifdef _WIN32
-#include <unistd.h>
-#endif
 
 #include "avro.h"
 

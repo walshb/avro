@@ -269,7 +269,7 @@ static int encode_deflate(avro_codec_t c, void * data, int64_t len)
 	s->next_in = (Bytef*)data;
 	s->avail_in = (uInt)len;
 
-	s->next_out = c->block_data;
+	s->next_out = (Bytef *)c->block_data;
 	s->avail_out = (uInt)c->block_size;
 
 	s->total_out = 0;
@@ -313,10 +313,10 @@ static int decode_deflate(avro_codec_t c, void * data, int64_t len)
 
 	c->used_size = 0;
 
-	s->next_in = data;
+	s->next_in = (Bytef *)data;
 	s->avail_in = len;
 
-	s->next_out = c->block_data;
+	s->next_out = (Bytef *)c->block_data;
 	s->avail_out = c->block_size;
 
 	s->total_out = 0;
@@ -337,7 +337,7 @@ static int decode_deflate(avro_codec_t c, void * data, int64_t len)
 		if (err == Z_BUF_ERROR)
 		{
 			c->block_data = avro_realloc(c->block_data, c->block_size, c->block_size * 2);
-			s->next_out = c->block_data + s->total_out;
+			s->next_out = (Bytef *)c->block_data + s->total_out;
 			s->avail_out += c->block_size;
 			c->block_size = c->block_size * 2;
 		}

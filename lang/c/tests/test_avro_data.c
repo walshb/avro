@@ -22,6 +22,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+#define strcasecmp _stricmp
+#endif
+
 char buf[4096];
 avro_reader_t reader;
 avro_writer_t writer;

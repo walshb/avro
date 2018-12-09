@@ -21,7 +21,7 @@ add_executable(quickstop quickstop.c)
 target_link_libraries(quickstop avro-static)
 
 if (WIN32)
-    set(exec_name ${CMAKE_CURRENT_BINARY_DIR}/Debug/quickstop.exe)
+    set(exec_name ${CMAKE_CURRENT_BINARY_DIR}/quickstop.exe)
 else (WIN32)
     set(exec_name ${CMAKE_CURRENT_BINARY_DIR}/quickstop)
 endif (WIN32)

@@ -74,7 +74,7 @@ static int is_avro_id(const char *name)
  * namespace (as a newly allocated buffer using Avro's allocator). */
 static char *split_namespace_name(const char *fullname, const char **name_out)
 {
-	char *last_dot = strrchr(fullname, '.');
+	const char *last_dot = strrchr(fullname, '.');
 	if (last_dot == NULL) {
 		*name_out = fullname;
 		return NULL;
@@ -752,12 +752,12 @@ avro_schema_t avro_schema_link_target(avro_schema_t schema)
 }
 
 static const char *
-qualify_name(const char *name, const char *namespace)
+qualify_name(const char *name, const char *namespc)
 {
 	char *full_name;
-	if (namespace != NULL && strchr(name, '.') == NULL) {
-		full_name = avro_str_alloc(strlen(name) + strlen(namespace) + 2);
-		sprintf(full_name, "%s.%s", namespace, name);
+	if (namespc != NULL && strchr(name, '.') == NULL) {
+		full_name = avro_str_alloc(strlen(name) + strlen(namespc) + 2);
+		sprintf(full_name, "%s.%s", namespc, name);
 	} else {
 		full_name = avro_strdup(name);
 	}
@@ -768,20 +768,20 @@ static int
 save_named_schemas(const avro_schema_t schema, st_table *st)
 {
 	const char *name = avro_schema_name(schema);
-	const char *namespace = avro_schema_namespace(schema);
-	const char *full_name = qualify_name(name, namespace);
+	const char *namespc = avro_schema_namespace(schema);
+	const char *full_name = qualify_name(name, namespc);
 	int rval = st_insert(st, (st_data_t) full_name, (st_data_t) schema);
 	return rval;
 }
 
 static avro_schema_t
-find_named_schemas(const char *name, const char *namespace, st_table *st)
+find_named_schemas(const char *name, const char *namespc, st_table *st)
 {
 	union {
 		avro_schema_t schema;
 		st_data_t data;
 	} val;
-	const char *full_name = qualify_name(name, namespace);
+	const char *full_name = qualify_name(name, namespc);
 	int rval = st_lookup(st, (st_data_t) full_name, &(val.data));
 	avro_str_free((char *)full_name);
 	if (rval) {
@@ -794,7 +794,7 @@ find_named_schemas(const char *name, const char *namespace, st_table *st)
 static int
 avro_type_from_json_t(json_t *json, avro_type_t *type,
 		      st_table *named_schemas, avro_schema_t *named_type,
-		      const char *namespace)
+		      const char *namespc)
 {
 	json_t *json_type;
 	const char *type_str;
@@ -845,7 +845,7 @@ avro_type_from_json_t(json_t *json, avro_type_t *type,
 		*type = AVRO_MAP;
 	} else if (strcmp(type_str, "fixed") == 0) {
 		*type = AVRO_FIXED;
-	} else if ((*named_type = find_named_schemas(type_str, namespace, named_schemas))) {
+	} else if ((*named_type = find_named_schemas(type_str, namespc, named_schemas))) {
 		*type = AVRO_LINK;
 	} else {
 		avro_set_error("Unknown Avro \"type\": %s", type_str);
@@ -936,15 +936,15 @@ avro_schema_from_json_t(json_t *json, avro_schema_t *schema,
 			}
 
 			if (strchr(fullname, '.')) {
-				char *namespace = split_namespace_name(fullname, &name);
-				*schema = avro_schema_record(name, namespace);
-				avro_str_free(namespace);
+				char *namespc = split_namespace_name(fullname, &name);
+				*schema = avro_schema_record(name, namespc);
+				avro_str_free(namespc);
 			} else if (json_is_string(json_namespace)) {
-				const char *namespace = json_string_value(json_namespace);
-				if (strlen(namespace) == 0) {
-					namespace = NULL;
+				const char *namespc = json_string_value(json_namespace);
+				if (strlen(namespc) == 0) {
+					namespc = NULL;
 				}
-				*schema = avro_schema_record(fullname, namespace);
+				*schema = avro_schema_record(fullname, namespc);
 			} else {
 				*schema = avro_schema_record(fullname, parent_namespace);
 			}
@@ -1035,16 +1035,16 @@ avro_schema_from_json_t(json_t *json, avro_schema_t *schema,
 			}
 
 			if (strchr(fullname, '.')) {
-				char *namespace;
-				namespace = split_namespace_name(fullname, &name);
-				*schema = avro_schema_enum_ns(name, namespace);
-				avro_str_free(namespace);
+				char *namespc;
+				namespc = split_namespace_name(fullname, &name);
+				*schema = avro_schema_enum_ns(name, namespc);
+				avro_str_free(namespc);
 			} else if (json_is_string(json_namespace)) {
-				const char *namespace = json_string_value(json_namespace);
-				if (strlen(namespace) == 0) {
-					namespace = NULL;
+				const char *namespc = json_string_value(json_namespace);
+				if (strlen(namespc) == 0) {
+					namespc = NULL;
 				}
-				*schema = avro_schema_enum_ns(fullname, namespace);
+				*schema = avro_schema_enum_ns(fullname, namespc);
 			} else {
 				*schema = avro_schema_enum_ns(fullname, parent_namespace);
 			}
@@ -1172,16 +1172,16 @@ avro_schema_from_json_t(json_t *json, avro_schema_t *schema,
 			fullname = json_string_value(json_name);
 
 			if (strchr(fullname, '.')) {
-				char *namespace;
-				namespace = split_namespace_name(fullname, &name);
-				*schema = avro_schema_fixed_ns(name, namespace, (int64_t) size);
-				avro_str_free(namespace);
+				char *namespc;
+				namespc = split_namespace_name(fullname, &name);
+				*schema = avro_schema_fixed_ns(name, namespc, (int64_t) size);
+				avro_str_free(namespc);
 			} else if (json_is_string(json_namespace)) {
-				const char *namespace = json_string_value(json_namespace);
-				if (strlen(namespace) == 0) {
-					namespace = NULL;
+				const char *namespc = json_string_value(json_namespace);
+				if (strlen(namespc) == 0) {
+					namespc = NULL;
 				}
-				*schema = avro_schema_fixed_ns(fullname, namespace, (int64_t) size);
+				*schema = avro_schema_fixed_ns(fullname, namespc, (int64_t) size);
 			} else {
 				*schema = avro_schema_fixed_ns(fullname, parent_namespace, (int64_t) size);
 			}
@@ -1770,9 +1770,9 @@ static int write_link(avro_writer_t out, const struct avro_link_schema_t *link,
 {
 	int rval;
 	check(rval, avro_write_str(out, "\""));
-	const char *namespace = avro_schema_namespace(link->to);
-	if (namespace && nullstrcmp(namespace, parent_namespace)) {
-		check(rval, avro_write_str(out, namespace));
+	const char *namespc = avro_schema_namespace(link->to);
+	if (namespc && nullstrcmp(namespc, parent_namespace)) {
+		check(rval, avro_write_str(out, namespc));
 		check(rval, avro_write_str(out, "."));
 	}
 	check(rval, avro_write_str(out, avro_schema_name(link->to)));

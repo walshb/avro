@@ -28,6 +28,7 @@ extern "C" {
 
 #ifdef _WIN32
   #include <avro/msinttypes.h>
+  typedef __int64 ssize_t;
 #else
   #include <inttypes.h>
 #endif
