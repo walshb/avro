@@ -17,6 +17,7 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdio.h>
 #include "avro_private.h"
 #include "dump.h"
 
